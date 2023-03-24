@@ -1,0 +1,86 @@
+#include "List.h"
+#include "ListNode.h"
+
+// clang++ List.cpp ListItr.cpp ListNode.cpp ListTest.cpp -fsanitize=address -fno-omit-frame-pointer -g; ./a.out 
+
+// The default constructor.
+// It should initialize all private data members
+// and set up the basic list structure with the dummy head and tail nodes.
+List::List() {
+    /*ListNode* head;       // Dummy node representing the beginning of the list
+    ListNode* tail;       // Dummy node representing the end of the list
+    int count;            // Number of elements in the list*/
+    head = new ListNode();
+    tail = new ListNode(); 
+    count = 0;
+}
+
+// Returns true if empty, else false
+bool List::isEmpty() const {
+    return count == 0; 
+}
+
+
+void List::insertAtTail(int x) {
+    tail->value = x; 
+}
+
+// Returns an iterator that points to the first ListNode **after** the dummy head node (even on an empty list!)
+ListItr List::first() {
+    if (count == 0)
+        return head; 
+    return head->next;
+}
+
+// Returns an iterator that points to the last ListNode **before** the dummy tail node (even on an empty list!)
+ListItr List::last() {
+    if (count == 0)
+        return tail; 
+    return tail->previous;
+}
+
+// Inserts x after current iterator position
+void List::insertAfter(int x, ListItr position) {
+    ListNode* previousNext = position.current->next; 
+    ListNode* newItem = new ListNode(); 
+    newItem->value = x; 
+    
+    position.current->next = newItem; 
+
+    newItem->next = previousNext; 
+    newItem->previous = position.current;
+
+    count++; 
+}
+
+// Inserts x before current iterator position
+void List::insertBefore(int x, ListItr position) {
+    // position.current->previous->value = x; 
+    // TODO
+}
+
+// Returns an iterator that points to the first occurrence of x.
+// When the parameter is not in the list, return a ListItr object that points to the dummy tail node.
+// This makes sense because you can test the return from find() to see if isPastEnd() is true.
+// TODO
+// ListItr List::find(int x) {
+
+// }
+
+// printList: non-member function prototype
+// prints list forwards (head -> tail) when forward is true
+// or backwards (tail -> head) when forward is false
+// You **must** use your ListItr class to implement this function!
+void printList(List& source, bool forward) {
+    if (source.isEmpty()) return; 
+
+    if (forward) {
+        ListItr firstEl = source.first(); 
+       
+        while (!firstEl.isPastEnd()) {
+            cout << "el = " << firstEl.retrieve() << "\n"; 
+            firstEl.moveForward();
+        }
+    
+    }
+}
