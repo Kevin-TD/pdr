@@ -91,7 +91,8 @@ int main () {
     l.insertAfter(200, l.find(100));
     l.insertAfter(300, l.find(100));
     printList(l, true);
-    printList(l, false);
+    l.insertBefore(500, l.find(100));
+    printList(l, true);
 
     List cpy = List(l);
     List a1 = List();
@@ -111,8 +112,9 @@ int main () {
     printList(cpy2, true);
 
     // my own very scuffed debugging 
-
     */
+
+    
 
 
     // Initialize this run

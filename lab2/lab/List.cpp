@@ -56,8 +56,10 @@ List::~List() {
 // It should copy the contents of every ListNode in `source`
 // into an **existing** list (the reference to the calling List object itself).
 List& List::operator=(const List& source) {
+    if (this == &source) return *this; 
+
     makeEmpty(); 
-    ListItr current = head->next; 
+    ListItr current = source.head->next; 
     while (!current.isPastEnd()) {
         insertAtTail(current.current->value);
         current = current.current->next; 
@@ -135,7 +137,7 @@ void List::insertAfter(int x, ListItr position) {
     
     position.current->next = newItem; 
     
-    previousNext->previous = newItem; // 
+    previousNext->previous = newItem; 
 
     newItem->next = previousNext; 
     newItem->previous = position.current; 
@@ -145,14 +147,22 @@ void List::insertAfter(int x, ListItr position) {
 
 // Inserts x before current iterator position
 void List::insertBefore(int x, ListItr position) {
-    // position.current->previous->value = x; 
-    // TODO
+    ListNode* previousPrevious = position.current->previous; 
+
+    ListNode* newItem = new ListNode(); 
+    newItem->value = x; 
+
+    position.current->previous = newItem; 
+
+    previousPrevious->next = newItem; 
+
+    newItem->next = position.current; 
+    newItem->previous = previousPrevious;
 }
 
 // Returns an iterator that points to the first occurrence of x.
 // When the parameter is not in the list, return a ListItr object that points to the dummy tail node.
 // This makes sense because you can test the return from find() to see if isPastEnd() is true.
-// TODO
 ListItr List::find(int x) {
     // search from head to tail 
     ListNode* current = head; 
