@@ -1,7 +1,7 @@
 #include "List.h"
 #include "ListNode.h"
 
-// clang++ List.cpp ListItr.cpp ListNode.cpp ListTest.cpp -fsanitize=address -fno-omit-frame-pointer -g; ./a.out
+// wa | clang++ -I /linked_list List.cpp ListItr.cpp ListNode.cpp ListTest.cpp -fsanitize=address -fno-omit-frame-pointer -g; ./a.out
 
 // The default constructor.
 // It should initialize all private data members
@@ -47,6 +47,7 @@ List::List(const List& source) {
 // The destructor.
 // It should empty the list and reclaim the memory allocated in the constructor for head and tail.
 List::~List() {
+	
     makeEmpty(); 
     delete head; 
     delete tail; 
@@ -158,8 +159,6 @@ void List::insertBefore(int x, ListItr position) {
 
     newItem->next = position.current; 
     newItem->previous = previousPrevious;
-
-    count++; 
 }
 
 // Returns an iterator that points to the first occurrence of x.
