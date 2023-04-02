@@ -63,53 +63,60 @@ int main () {
   	// ListItr *itr = NULL;
     
     
-    List l = List();
-    l.insertAtTail(1);
-    l.insertAtTail(2);
-    l.insertAtTail(3);
-    l.insertAtTail(4);
-    l.insertAtTail(5);
-    l.insertAfter(6, l.find(3));
-    // (head) 1 2 3 4 5 (tail)
+ //   List<int> l = List<int>();
+ //   l.insertAtTail(1);
+ //   l.insertAtTail(2);
+ //   l.insertAtTail(3);
+ //   l.insertAtTail(4);
+ //   l.insertAtTail(5);
+ //   l.insertAfter(6, l.find(3));
+ //   // (head) 1 2 3 4 5 (tail)
 
-    printList(l, true);
-    printList(l, false);
+ //   printList(l, true);
+ //   printList(l, false);
 
-    ListItr m = l.find(1);
-    m.moveForward();
-    m.moveForward();
-    m.moveForward();
-    m.moveBackward();
+ //   ListItr<int> m = l.find(1);
+ //   m.moveForward();
+ //   m.moveForward();
+ //   m.moveForward();
+ //   m.moveBackward();
 
-    cout << m.retrieve() << endl;
+ //   cout << m.retrieve() << endl;
 
-    l.remove(2);
-    printList(l, true);
+ //   l.remove(2);
+ //   printList(l, true);
 
-    l.makeEmpty();
-    l.insertAtTail(100);
-    l.insertAfter(200, l.find(100));
-    l.insertAfter(300, l.find(100));
-    printList(l, true);
-    l.insertBefore(500, l.find(100));
-    printList(l, true);
+ //   l.makeEmpty();
+ //   l.insertAtTail(100);
+ //   l.insertAfter(200, l.find(100));
+ //   l.insertAfter(300, l.find(100));
+ //   printList(l, true);
+ //   l.insertBefore(500, l.find(100));
+ //   printList(l, true);
 
-    List cpy = List(l);
-    List a1 = List();
-    a1.insertAtTail(1);
-    //List a1cpy = List(a1);
-    printList(cpy, false);
-    //printList(a1cpy, true);
-    printList(a1, false);
+ //   List<int> cpy = List<int>(l);
+ //   List<int> a1 = List<int>();
+ //   a1.insertAtTail(1);
+ //   List<int> a1cpy = List<int>(a1);
+ //   printList(cpy, false);
+ //   printList(a1cpy, true);
+ //   printList(a1, false);
 
-    List cpy2 = List(); 
-    cpy2.insertAtTail(49);
-    cpy2.insertAtTail(50);
-    cpy2.insertAtTail(51);
+ //   List<int> cpy2 = List<int>(); 
+ //   cpy2.insertAtTail(49);
+ //   cpy2.insertAtTail(50);
+ //   cpy2.insertAtTail(51);
 
-   // List cpy3 = cpy2; 
-    //printList(cpy3, false);
-   // printList(cpy2, true);
+ //  List<int> cpy3 = cpy2; 
+ //  printList(cpy3, false);
+ //  printList(cpy2, true);
+
+ //   List<string> stringTest = List<string>(); 
+ //   stringTest.insertAtTail(string("hello")); 
+ //   stringTest.insertAtTail(string("goodbye")); 
+ //   stringTest.insertAtTail(string("ello chap")); 
+ //   printList(stringTest, true); 
+   
 
     // my own very scuffed debugging 
     

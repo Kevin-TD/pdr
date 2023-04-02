@@ -1,5 +1,6 @@
 #include "postfixCalculator.h"
 #include <string> 
+#include "stack.h"
 
 using namespace std;
 const string SPECIAL_KEYS = "+-*/~";
@@ -26,13 +27,30 @@ void reverseStack(stack<T>& s)
    return;
 }
 
+template <class T>
+void reverseStackSLL(StackLinkedList<T>& s) {
+   T item;
+   StackLinkedList<T> tmpStack;
+
+   while (!s.empty())
+   {
+      item = s.top();
+      s.pop();
+      tmpStack.push(item);
+   }
+
+
+   s = tmpStack;
+   return;
+}
+
 bool isSpecialKey(char key) {
 	return SPECIAL_KEYS.find(key) != string::npos; 
 } 
 
 int postfixCalculator::compute(string expr) {
 	string curExpr = "";
-	stack<string> calcStack; 
+	StackLinkedList<string> calcStack; 
 	int stringLength = expr.length(); 
 
 	for (int i = 0; i < stringLength; i++ ) {
@@ -65,15 +83,15 @@ int postfixCalculator::compute(string expr) {
 		}
 	}
 	
-	// called so expression in testinput.txt can be read left-to-right via popping 
-	reverseStack(calcStack);
+	// called so we can read expr from left to right
+	reverseStackSLL(calcStack); 
 
-	stack<string> poppedStack; 
+	StackLinkedList<string> poppedStack; 
 
 	while (!calcStack.empty()) {
 		string token = calcStack.top(); 
 		bool specialKeyFound = false; 	
-		
+
 		// special key 
 		if (SPECIAL_KEYS.find(token) != string::npos) {
 			specialKeyFound = true; 
@@ -120,7 +138,7 @@ int postfixCalculator::compute(string expr) {
 				}
 			}
 			else if (token.compare(string("/")) == 0) {
-				calcStack.pop(); 
+				calcStack.pop();
 				int operand2 = stoi(poppedStack.top());
 			   	poppedStack.pop(); 
 				int operand1 = stoi(poppedStack.top());
