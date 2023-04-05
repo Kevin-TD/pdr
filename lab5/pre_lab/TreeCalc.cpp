@@ -16,26 +16,16 @@ TreeCalc::~TreeCalc() {
 
 // Deletes tree/frees memory
 void TreeCalc::cleanTree(TreeNode* tree) {
+	if (tree->left != NULL) {
+		cleanTree(tree->left); 
+	}
+
+	if (tree->right != NULL) {
+		cleanTree(tree->right);
+	}
+
+	delete tree; 
 }
-
-template <class T>
-void reverseStack(stack<T>& s)
-{
-   T item;
-   stack<T> tmpStack;
-
-   while (!s.empty())
-   {
-      item = s.top();
-      s.pop();
-      tmpStack.push(item);
-   }
-
-
-   s = tmpStack;
-   return;
-}
-
 
 const string SPECIAL_KEYS = "+-/*"; 
 bool isSpecialKey(string key) {
@@ -49,17 +39,17 @@ void TreeCalc::readInput() {
          << "Any non-numeric or non-operator character,"
          << " e.g. #, will terminate input" << endl;
     cout << "Enter first element: ";
-    cin >> response;
+    //cin >> response;
     //while input is legal
 	
-    while (isdigit(response[0]) || response[0] == '/' || response[0] == '*'
-            || response[0] == '-' || response[0] == '+') {
-        insert(response);
-        cout << "Enter next element: ";
-        cin >> response;
-    }
+ //   while (isdigit(response[0]) || response[0] == '/' || response[0] == '*'
+ //           || response[0] == '-' || response[0] == '+') {
+ //       insert(response);
+ //       cout << "Enter next element: ";
+ //       cin >> response;
+ //   }
 
- // insert("34"); insert("6"); insert("+"); insert("-8"); insert("4"); insert("/"); insert("-"); 
+  insert("34"); insert("6"); insert("+"); insert("-8"); insert("4"); insert("/"); insert("-"); 
 }
 
 // Puts value in tree stack
