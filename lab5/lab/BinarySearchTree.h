@@ -51,6 +51,7 @@ private:
     void printTree(BinaryNode* root, Trunk* prev, bool isRight);
 
     // Any other methods you need...
+	int numNodes(BinaryNode* node) const; 
 };
 
 #endif

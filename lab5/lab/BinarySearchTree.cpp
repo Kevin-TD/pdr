@@ -4,6 +4,8 @@
 #include <string>
 using namespace std;
 
+//:set autoindent 
+
 BinarySearchTree::BinarySearchTree() {
     root = NULL;
 }
@@ -16,6 +18,42 @@ BinarySearchTree::~BinarySearchTree() {
 // insert finds a position for x in the tree and places it there.
 void BinarySearchTree::insert(const string& x) {
     // YOUR IMPLEMENTATION GOES HERE
+	if (find(x)) return; // prevents duplicates 
+
+
+	BinaryNode* newNode = new BinaryNode();
+	newNode->value = x;
+		
+	if (root == NULL) {
+		root = newNode;  
+		return; 
+	}
+	
+	BinaryNode* currentNode = root; 
+	
+	while (true) {
+		if (x > currentNode->value) {
+			// right child
+			if (currentNode->right == NULL) {
+				currentNode->right = newNode; 
+				return; 
+			} 
+			else {
+				currentNode = currentNode->right; 
+			}
+		}
+		else {
+			// left child
+			if (currentNode->left == NULL) {
+				currentNode->left = newNode;
+				return; 
+			}
+			else {
+				currentNode = currentNode->left; 
+			}
+		}
+	}	
+	
 }
 
 // remove finds x's position in the tree and removes it.
@@ -73,17 +111,118 @@ BinaryNode* BinarySearchTree::remove(BinaryNode*& n, const string& x) {
 // pathTo finds x in the tree and returns a string representing the path it
 // took to get there.
 string BinarySearchTree::pathTo(const string& x) const {
-    // YOUR IMPLEMENTATION GOES HERE
+	 // YOUR IMPLEMENTATION GOES HERE
+	string pathTaken;  
+	
+	if (root == NULL) return ""; 	
+	
+	pathTaken = root->value + " "; 
+
+	if (x == root->value ) {
+		return pathTaken; 
+	}
+	
+	BinaryNode* currentNode = root;
+	
+
+	while (true) {
+		if (x > currentNode->value) {
+			// right child
+			if (currentNode->right != NULL) {
+				pathTaken += currentNode->right->value + " ";
+				
+				if (currentNode->right->value == x) {
+					return pathTaken;
+				}
+				else {
+					currentNode = currentNode->right; 
+				}
+			} 
+			else {
+				return ""; 
+			}
+		}
+		else {
+			// left child
+			if (currentNode->left != NULL) {
+				pathTaken += currentNode->left->value + " ";
+
+				if (currentNode->left->value == x) {
+					return pathTaken; 
+				}
+				else {
+				currentNode = currentNode->left; 
+				}
+			}
+			else {
+				return ""; 
+			}
+		}
+	}
 }
 
 // find determines whether or not x exists in the tree.
 bool BinarySearchTree::find(const string& x) const {
-    // YOUR IMPLEMENTATION GOES HERE
+    if (root == NULL) return false;  	
+	
+	if (x == root->value ) {
+		return true; 
+	}
+	
+	BinaryNode* currentNode = root;
+	
+
+	while (true) {
+		if (x > currentNode->value) {
+			// right child
+			if (currentNode->right != NULL) {
+				if (currentNode->right->value == x) {
+					return true;
+				}
+				else {
+					currentNode = currentNode->right; 
+				}
+			} 
+			else {
+				return false; 
+			}
+		}
+		else {
+			// left child
+			if (currentNode->left != NULL) {
+				if (currentNode->left->value == x) {
+					return true;
+				}
+				else {
+					currentNode = currentNode->left; 
+				}
+			}
+			else {
+				return false; 
+			}
+		}
+	}
 }
+
+// helper
+int BinarySearchTree::numNodes(BinaryNode* node) const {
+	if (node == NULL) return 0; 
+
+	int total = 0;
+	
+	if (node == root) total++; 
+	if (node->left != NULL) total++; 
+	if (node->right != NULL) total++; 
+
+	return total + numNodes(node->left) + numNodes(node->right); 
+}
+
 
 // numNodes returns the total number of nodes in the tree.
 int BinarySearchTree::numNodes() const {
     // YOUR IMPLEMENTATION GOES HERE
+	// head does not count as a node
+	return numNodes(root); 	
 }
 
 // min finds the string with the smallest value in a subtree.
