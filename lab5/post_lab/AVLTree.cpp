@@ -15,24 +15,6 @@ AVLTree::~AVLTree() {
     root = NULL;
 }
 
-template <class T>
-void reverseStack(stack<T>& s)
-{
-   T item;
-   stack<T> tmpStack;
-
-   while (!s.empty())
-   {
-      item = s.top();
-      s.pop();
-      tmpStack.push(item);
-   }
-
-
-   s = tmpStack;
-   return;
-}
-
 // insert finds a position for x in the tree and places it there, rebalancing
 // as necessary.
 void AVLTree::insert(const string& x) {
@@ -40,6 +22,8 @@ void AVLTree::insert(const string& x) {
 	// TODO: HEIGHT, THEN CALL BALANCE 	
 	
 	if (find(x)) return; // prevents duplicates 
+
+	recentInsertionOrDeletion = x; 
 
 	AVLNode* newNode = new AVLNode();
 	newNode->value = x;
@@ -52,12 +36,10 @@ void AVLTree::insert(const string& x) {
 	AVLNode* currentNode = root; 
 
 	while (true) {
-		cout << "f5\n";
 		if (x > currentNode->value) {
 			// right child
 			if (currentNode->right == NULL) {
 				currentNode->right = newNode; 
-				currentNode->right->parent = currentNode; 
 				break;  
 			} 
 			else {
@@ -68,7 +50,6 @@ void AVLTree::insert(const string& x) {
 			// left child
 			if (currentNode->left == NULL) {
 				currentNode->left = newNode;
-				currentNode->left->parent = currentNode; 
 				break;   
 			}
 			else {
@@ -80,84 +61,285 @@ void AVLTree::insert(const string& x) {
 	
 	setHeights(root);
 	setDeepestImbalance(root);
-	cout << "imbal = " << deepestImbalance << endl; 
 
 	// no imbalance
 	if (deepestImbalance == "?") return; 
 
-	cout << "f1\n";
-	stack<bool> directions = directionsTo(x);
-	cout << "f2\n";
-	AVLNode* deepestImbalanceNode = nodeOf(deepestImbalance); 
 
+	balanceTree(); 
+}
+
+
+
+void AVLTree::balanceTree() {
+	// deepest imbalance node 
+	AVLNode* diNode = nodeOf(deepestImbalance); 
+	// useful later for flipping trees 
+	AVLNode* diNodeCopy = makeCopy(diNode); 
+
+	//  determines rotation type 
+	stack<bool> directions = directionsTo(recentInsertionOrDeletion, diNode);
 
 	bool rot2 = directions.top();
 	directions.pop(); 
 	bool rot1 = directions.top();
 	
-	printTree();
-	
+	// tree balancing 
+
 	// right right 
 	if (rot1 && rot2) {
+		/*
+				a 
+			   / \
+			  A   b
+			 	 / \      
+				B	c
+				   / \
+				  C   D
+		perform single rotate left 
+		similar idea for rest of rotations 
 		
+		*/
+		string a = diNodeCopy->value;
+		string b = diNodeCopy->right->value;
+		string c = diNodeCopy->right->right->value; 
+		AVLNode* A = diNodeCopy->left;
+		AVLNode* B = diNodeCopy->right->left;
+		AVLNode* C = diNodeCopy->right->right->left;
+		AVLNode* D = diNodeCopy->right->right->right; 
 
-		AVLNode* a = nodeOf(deepestImbalance);  
-		AVLNode* _a = a;
-		// makeCopy(deepestImbalance) 
-		
-		cout << "OG TREE\n";
-		printTree(a, NULL, false);
-		cout << "COPY TREE\n";
-		printTree(_a, NULL, false);
-				
-		a = _a->right;
-		a->left = _a;
-		a->right = _a->right->right;
-		a->right->right = _a->right->right->right; 
-		a->right->left = _a->right->right->left;
-		a->left->left = _a->left; 
-		a->left->right = _a->right->left; 
-	
-		a->left->parent = a;
-		a->right->parent = a;
-		a->parent = NULL;  
+		diNode->value = b; 
+		diNode->right->value = c; 
 
-		if (a->right->right != NULL) a->right->right->parent = a->right; 
-		if (a->right->left != NULL) a->right->left->parent = a->right; 
-		if (a->left->left != NULL) a->left->left->parent = a->left; 
-		if (a->left->right != NULL) a->left->right->parent = a->left; 	
-		cout << "TEST: " << a->left->parent->value << endl; 
-		
-		cout << "POST OG TREE\n";
-		printTree(a, NULL, false); 
-		cout << "POST COPY TREE\n";
-		printTree(_a, NULL, false); 
-	
+		if (diNode->left == NULL) diNode->left = new AVLNode(); 
+		diNode->left->value = a; 
+
+		diNode->left->left = A;
+		diNode->left->right = B; 
+		diNode->right->left = C; 
+		diNode->right->right = D; 	
+
 	}
 	// right left 
 	else if (rot1 && !rot2) {
+		string a = diNodeCopy->value;
+		string b = diNodeCopy->right->value;
+		string c = diNodeCopy->right->left->value; 
+		AVLNode* A = diNodeCopy->left;  			
+		AVLNode* B = diNodeCopy->right->left->left;
+		AVLNode* C = diNodeCopy->right->left->right; 
+		AVLNode* D = diNodeCopy->right->right; 
+
+		diNode->value = c; 
+		diNode->right->value = b; 
+
+		if (diNode->left == NULL) diNode->left = new AVLNode(); 
+		diNode->left->value = a; 
 		
+		diNode->left->left = A;
+		diNode->left->right = B; 
+		diNode->right->left = C; 
+		diNode->right->right = D; 
+
 	}
 	// left right 
 	else if (!rot1 && rot2) {
-		
+		string a = diNodeCopy->value;
+		string b = diNodeCopy->left->value; 
+		string c = diNodeCopy->left->right->value; 
+		AVLNode* A = diNodeCopy->right;			
+		AVLNode* B = diNodeCopy->left->left; 
+		AVLNode* C = diNodeCopy->left->right->left; 
+		AVLNode* D = diNodeCopy->left->right->right; 
+
+		diNode->value = c;
+		diNode->left->value = b; 
+
+		if (diNode->right == NULL) diNode->right = new AVLNode(); 
+		diNode->right->value = a; 
+
+		diNode->left->left = B;
+		diNode->left->right = C; 
+		diNode->right->left = D; 
+		diNode->right->right = A; 
+
 	}
 	// left left 
 	else if (!rot1 && !rot2) {
-		
-	}
+		string a = diNodeCopy->value; 
+		string b = diNodeCopy->left->value; 
+		string c = diNodeCopy->left->left->value; 
+		AVLNode* A = diNodeCopy->right;			
+		AVLNode* B = diNodeCopy->left->right; 
+		AVLNode* C = diNodeCopy->left->left->right; 
+		AVLNode* D = diNodeCopy->left->left->left; 
 
+		diNode->value = b;
+		diNode->left->value = c; 
+
+		if (diNode->right == NULL) diNode->right = new AVLNode(); 
+		diNode->right->value = a; 
+
+		diNode->left->left = D;
+		diNode->left->right = C; 
+		diNode->right->left = B; 
+		diNode->right->right = A; 
+
+	}
+	
+	deepestImbalance = "?";
+	setHeights(root);
+	
 }
 
-AVLNode* AVLTree::makeCopy(AVLNode* node) {
-	AVLNode* cpy = new AVLNode(); 
-	if (node == NULL) return cpy;
+void AVLTree::balanceTreeDeletion() {
+	AVLNode* diNode = nodeOf(deepestImbalance); 
+	// useful later for flipping trees 
+	AVLNode* diNodeCopy = makeCopy(diNode); 
+	
+	bool rot1, rot2; 
 
+	// determining rotation type 
+
+	// left left 
+	if (getBalance(diNode) > 1 && getBalance(root->left)) {
+		rot1 = false, rot2 = false; 
+	}
+	// Left Right Case
+	else if (getBalance(diNode) > 1 && getBalance(root->left) < 0){
+		rot1 = false, rot2 = true; 
+	}
+
+	// Right Right Case
+	else if (getBalance(diNode) < -1 && getBalance(root->right) <= 0) {
+		rot1 = true, rot2 = true; 
+	}
+
+	// Right Left Case
+	else if (getBalance(diNode) < -1 && getBalance(root->right) > 0){
+		rot1 = true, rot2 = false; 
+	}
+
+
+
+	// tree balancing 
+
+	// right right 
+	if (rot1 && rot2) {
+		/*
+				a 
+			   / \
+			  A   b
+			 	 / \      
+				B	c
+				   / \
+				  C   D
+		perform single rotate left 
+		similar idea for rest of rotations 
+		
+		*/
+		string a = diNodeCopy->value;
+		string b = diNodeCopy->right->value;
+		string c = diNodeCopy->right->right->value; 
+		AVLNode* A = diNodeCopy->left;
+		AVLNode* B = diNodeCopy->right->left;
+		AVLNode* C = diNodeCopy->right->right->left;
+		AVLNode* D = diNodeCopy->right->right->right; 
+
+		diNode->value = b; 
+		diNode->right->value = c; 
+
+		if (diNode->left == NULL) diNode->left = new AVLNode(); 
+		diNode->left->value = a; 
+
+		diNode->left->left = A;
+		diNode->left->right = B; 
+		diNode->right->left = C; 
+		diNode->right->right = D; 	
+
+	}
+	// right left 
+	else if (rot1 && !rot2) {
+		string a = diNodeCopy->value;
+		string b = diNodeCopy->right->value;
+		string c = diNodeCopy->right->left->value; 
+		AVLNode* A = diNodeCopy->left;  			
+		AVLNode* B = diNodeCopy->right->left->left;
+		AVLNode* C = diNodeCopy->right->left->right; 
+		AVLNode* D = diNodeCopy->right->right; 
+
+		diNode->value = c; 
+		diNode->right->value = b; 
+
+		if (diNode->left == NULL) diNode->left = new AVLNode(); 
+		diNode->left->value = a; 
+		
+		diNode->left->left = A;
+		diNode->left->right = B; 
+		diNode->right->left = C; 
+		diNode->right->right = D; 
+
+	}
+	// left right 
+	else if (!rot1 && rot2) {
+		string a = diNodeCopy->value;
+		string b = diNodeCopy->left->value; 
+		string c = diNodeCopy->left->right->value; 
+		AVLNode* A = diNodeCopy->right;			
+		AVLNode* B = diNodeCopy->left->left; 
+		AVLNode* C = diNodeCopy->left->right->left; 
+		AVLNode* D = diNodeCopy->left->right->right; 
+
+		diNode->value = c;
+		diNode->left->value = b; 
+
+		if (diNode->right == NULL) diNode->right = new AVLNode(); 
+		diNode->right->value = a; 
+
+		diNode->left->left = B;
+		diNode->left->right = C; 
+		diNode->right->left = D; 
+		diNode->right->right = A; 
+
+	}
+	// left left 
+	else if (!rot1 && !rot2) {
+		string a = diNodeCopy->value; 
+		string b = diNodeCopy->left->value; 
+		string c = diNodeCopy->left->left->value; 
+		AVLNode* A = diNodeCopy->right;			
+		AVLNode* B = diNodeCopy->left->right; 
+		AVLNode* C = diNodeCopy->left->left->right; 
+		AVLNode* D = diNodeCopy->left->left->left; 
+
+		diNode->value = b;
+		diNode->left->value = c; 
+
+		if (diNode->right == NULL) diNode->right = new AVLNode(); 
+		diNode->right->value = a; 
+
+		diNode->left->left = D;
+		diNode->left->right = C; 
+		diNode->right->left = B; 
+		diNode->right->right = A; 
+
+	}
+	
+	deepestImbalance = "?";
+	setHeights(root);
+	
+}
+
+
+AVLNode* AVLTree::makeCopy(AVLNode* node) {
+	AVLNode* cpy; 
+	if (node == NULL) return NULL;
+	
+	cpy = new AVLNode(); 
 	cpy->value = node->value; 
 	cpy->height = node->height;
-	cpy->parent = node->parent;  
-	if (node->left != NULL) cpy->left = makeCopy(node->left); 
-	if (node->right != NULL) cpy->right = makeCopy(node->right); 
+	cpy->left = makeCopy(node->left); 
+	cpy->right = makeCopy(node->right); 
 
 	return cpy;
 }
@@ -166,6 +348,14 @@ AVLNode* AVLTree::makeCopy(AVLNode* node) {
 // necessary.
 void AVLTree::remove(const string& x) {
     root = remove(root, x);
+
+	setHeights(root);
+	setDeepestImbalance(root);
+
+	// no imbalance
+	if (deepestImbalance == "?") return; 
+
+	balanceTreeDeletion(); 
 }
 
 // pathTo finds x in the tree and returns a string representing the path it
@@ -242,7 +432,7 @@ AVLNode* AVLTree::nodeOf(const string& x) const {
 			if (currentNode->right != NULL) {
 				
 				if (currentNode->right->value == x) {
-					return currentNode;
+					return currentNode->right;
 				}
 				else {
 					currentNode = currentNode->right; 
@@ -257,7 +447,7 @@ AVLNode* AVLTree::nodeOf(const string& x) const {
 			if (currentNode->left != NULL) {
 				
 				if (currentNode->left->value == x) {
-					return currentNode; 
+					return currentNode->left; 
 				}
 				else {
 				currentNode = currentNode->left; 
@@ -271,9 +461,10 @@ AVLNode* AVLTree::nodeOf(const string& x) const {
 	
 	return dummy; 
 }
+
 // 0 = left, 1 = right 
 // stops after it's filled by 2 because that's all thats needed for our impl 
-stack<bool> AVLTree::directionsTo(const string& x) const {
+stack<bool> AVLTree::directionsTo(const string& x, AVLNode* startingPoint) const {
     // YOUR IMPLEMENTATION GOES HERE
 	stack<bool> leftRightTurnsTaken;  
 	stack<bool> dummy; 
@@ -284,8 +475,7 @@ stack<bool> AVLTree::directionsTo(const string& x) const {
 		return dummy; 
 	}
 	
-	AVLNode* currentNode = root;
-	
+	AVLNode* currentNode = startingPoint;
 
 	while (true) {
 		if (leftRightTurnsTaken.size() == 2) return leftRightTurnsTaken;
@@ -328,11 +518,8 @@ stack<bool> AVLTree::directionsTo(const string& x) const {
 }
 
 
-
-
 // find determines whether or not x exists in the tree.
 bool AVLTree::find(const string& x) const {
-    // YOUR IMPLEMENTATION GOES HERE
     if (root == NULL) return false;  	
 	
 	if (x == root->value ) {
@@ -393,10 +580,8 @@ int AVLTree::numNodes() const {
 }
 
 
-void AVLTree::setDeepestImbalance(AVLNode* node) {
-	AVLNode* dummy = new AVLNode(); 
-	if (numNodes() <= 2) return; 
 
+int AVLTree::getBalance(AVLNode* node) {
 	int leftHeight = 0;
 	int rightHeight = 0; 
 
@@ -407,22 +592,31 @@ void AVLTree::setDeepestImbalance(AVLNode* node) {
 		 rightHeight = node->right->height;
 	}
 
-	int balanceFactor = leftHeight - rightHeight;  
+	return leftHeight - rightHeight; 
+}
+
+void AVLTree::setDeepestImbalance(AVLNode* node) {
+	if (numNodes() <= 2) return; 
+
+	int balanceFactor = getBalance(node);
 	
 	// go right 	
 	if (balanceFactor <= -2) {
+		deepestImbalance = node->value;
 		setDeepestImbalance(node->right); 
 	}
 	// go left 	
 	else if (balanceFactor >= 2) {
+		deepestImbalance = node->value;
 		setDeepestImbalance(node->left); 
 	}
-	// too far
-	else {
-		deepestImbalance = node->parent->value;
-	}
 
-	
+	if (node->left != NULL) {
+		setDeepestImbalance(node->left); 
+	}
+	if (node->right != NULL) {
+		setDeepestImbalance(node->right); 
+	}
 	
 }
 
@@ -448,21 +642,6 @@ void AVLTree::setHeights(AVLNode* node) {
 	}
 }
 
-// balance makes sure that the subtree with root n maintains the AVL tree
-// property, namely that the balance factor of n is either -1, 0, or 1.
-void AVLTree::balance(AVLNode*& n) {
-    // YOUR IMPLEMENTATION GOES HERE
-}
-
-// rotateLeft performs a single rotation on node n with its right child.
-AVLNode* AVLTree::rotateLeft(AVLNode*& n) {
-    // YOUR IMPLEMENTATION GOES HERE
-}
-
-// rotateRight performs a single rotation on node n with its left child.
-AVLNode* AVLTree::rotateRight(AVLNode*& n) {
-    // YOUR IMPLEMENTATION GOES HERE
-}
 
 // private helper for remove to allow recursion over different nodes.
 // Returns an AVLNode* that is assigned to the original node.
@@ -507,7 +686,6 @@ AVLNode* AVLTree::remove(AVLNode*& n, const string& x) {
 
     // Recalculate heights and balance this subtree
     n->height = 1 + max(height(n->left), height(n->right));
-    balance(n);
 
     return n;
 }
@@ -567,7 +745,8 @@ void AVLTree::printTree(AVLNode* root, Trunk* prev, bool isRight) {
     }
 
     showTrunks(trunk);
-    cout << root->value << " " << root->height << endl;
+    cout << root->value << endl;
+	// root->height 
 
     if (prev) prev->str = prev_str;
     trunk->str = "   |";

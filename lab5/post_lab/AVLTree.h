@@ -44,14 +44,6 @@ private:
     // Declare a root node
     AVLNode* root;
 
-    // balance makes sure that the subtree with root n maintains the AVL tree
-    // property, namely that the balance factor of n is either -1, 0, or 1.
-    void balance(AVLNode*& n);
-    // rotateLeft performs a single rotation on node n with its right child.
-    AVLNode* rotateLeft(AVLNode*& n);
-    // rotateRight performs a single rotation on node n with its left child.
-    AVLNode* rotateRight(AVLNode*& n);
-
     // private helper for remove to allow recursion over different nodes. returns
     // an AVLNode* that is assigned to the original node.
     AVLNode* remove(AVLNode*& n, const string& x);
@@ -78,12 +70,18 @@ private:
 	int getNodeHeight(AVLNode* node); 
 
     string deepestImbalance;
+    string recentInsertionOrDeletion; 
 
-    stack<bool> directionsTo(const string& x) const;
+    void balanceTree();
+    void balanceTreeDeletion(); 
+
+    stack<bool> directionsTo(const string& x, AVLNode* startingPoint)  const;
 
     AVLNode* nodeOf(const string& x) const;
 
     AVLNode* makeCopy(AVLNode* node); 
+
+    int getBalance(AVLNode* node);
 };
 
 // max returns the greater of two integers.

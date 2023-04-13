@@ -7,7 +7,7 @@ using namespace std;
 
 int main() {
     AVLTree avl;
-    ifstream fileInput("./mytest.txt"); 
+    ifstream fileInput("./testfile3.txt"); 
 
 	string instr, word; 
 	while (fileInput >> instr >> word) {

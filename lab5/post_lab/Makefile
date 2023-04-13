@@ -1,2 +1,2 @@
 all:
-	clang++ AVLNode.cpp AVLTree.cpp AVLPathTest.cpp  -g ; ./a.out
+	clang++ AVLNode.cpp AVLTree.cpp AVLPathTest.cpp  -g -o out ; ./out

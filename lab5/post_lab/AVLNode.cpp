@@ -6,7 +6,6 @@ AVLNode::AVLNode() {
     value = "?";
     left = NULL;
     right = NULL;
-	parent = NULL; 
     height = 0;
 }
 

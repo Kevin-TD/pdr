@@ -10,7 +10,6 @@ class AVLNode {
     string value;
     AVLNode* left;
     AVLNode* right;
-	AVLNode* parent; 	
     int height;
 
     friend class AVLTree;
