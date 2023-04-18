@@ -1,2 +1,5 @@
 *.swp
 *.swo
+*.out
+*.vscode/
+*a.out.dSYM/

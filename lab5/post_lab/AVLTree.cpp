@@ -17,8 +17,6 @@ AVLTree::~AVLTree() {
 
 // insert finds a position for x in the tree and places it there, rebalancing
 // as necessary.
-void AVLTree::insert(const string& x) {
-    // YOUR IMPLEMENTATION GOES HERE	
 	// TODO: HEIGHT, THEN CALL BALANCE 	
 	
 	if (find(x)) return; // prevents duplicates 
