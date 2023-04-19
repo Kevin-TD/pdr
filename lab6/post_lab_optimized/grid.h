@@ -5,6 +5,7 @@
 #include <fstream> 
 #include <iostream>
 #include <list>
+#include "hash_table/hash.h"
 
 #define MAXROWS 500
 #define MAXCOLS 500
@@ -19,7 +20,8 @@ class Grid {
     Grid(std::string filename, bool logOutput);
     std::string getWordInGrid (int startRow, int startCol, int dir, int len);
     std::string* getWordsInGrid (int startRow, int startCol, int len);
-    std::list<WordDir> getAllWordsInAllDirs (int startRow, int startCol, int minLen);
+    std::list<WordDir> getAllWordsInAllDirs (int startRow, int startCol, int minLen, HashTable prefixTable);
+    void getAllDictWords (int startRow, int startCol, int minLen, HashTable dict, HashTable prefixHashTable);
     void printGrid(); 
     int getRows(); 
     int getCols();

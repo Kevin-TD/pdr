@@ -49,10 +49,6 @@ int getNumberOfLines(std::string fileName) {
     return count; 
 }
 
-HashTable::~HashTable() {
-    delete[] buckets; 
-}
-
 HashTable::HashTable(int tbSize) {
     tableSize = getNextPrime(tbSize); 
     buckets = new std::list<std::pair<std::string, bool> >[tableSize];
@@ -73,7 +69,16 @@ HashTable::HashTable(std::string fileName) {
         }
         file.close(); 
     }
+}
 
+HashTable::HashTable(std::list<std::string> inputList) {
+    int listSize = inputList.size();
+    tableSize = getNextPrime(listSize); 
+    buckets = new std::list<std::pair<std::string, bool> >[tableSize];
+
+    for (std::string s : inputList) {
+        insert(std::make_pair(s, true));
+    }
 }
 
 void HashTable::insert(std::pair<std::string, bool> pairToInsert) {

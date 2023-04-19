@@ -102,7 +102,7 @@ std::string* Grid::getWordsInGrid (int startRow, int startCol, int len) {
 }
 
 
-std::list<WordDir> Grid::getAllWordsInAllDirs (int startRow, int startCol, int minLen) {
+std::list<WordDir> Grid::getAllWordsInAllDirs (int startRow, int startCol, int minLen, HashTable prefixTable) {
     static std::string output;
 
     std::list<WordDir> outputs; 
@@ -111,9 +111,9 @@ std::list<WordDir> Grid::getAllWordsInAllDirs (int startRow, int startCol, int m
     // current column
     int r, c;
     int dir = 0;
-
     while (dir != 8) {
         r = startRow, c = startCol;
+        bool prefixChecked = false; 
         output.clear(); 
         output.reserve(256);
 
@@ -128,10 +128,20 @@ std::list<WordDir> Grid::getAllWordsInAllDirs (int startRow, int startCol, int m
             output += grid[r][c];
 
             if (output.length() >= minLen) {
-                WordDir wd; 
-                wd.word = output; 
-                wd.dir = dir; 
-                outputs.push_back(wd);
+                // WordDir wd; 
+                // wd.word = output; 
+                // wd.dir = dir; 
+                // outputs.push_back(wd);
+                
+                if (prefixTable[output] || output.length() == 3 || prefixChecked) {
+                    WordDir wd; 
+                    wd.word = output; 
+                    wd.dir = dir; 
+                    outputs.push_back(wd);
+                    prefixChecked = true; 
+                } else {
+                    break;
+                }
             }
 
             // move in the direction specified by the parameter
@@ -213,4 +223,100 @@ std::string Grid::dirToString(int dir) {
             return "NW";     
     }
     return "NOT FOUND";
+}
+
+
+void Grid::getAllDictWords (int startRow, int startCol, int minLen, HashTable dict, HashTable prefixHashTable) {
+ 
+    int wordsFound = 0; 
+    for (int i = 0; i < rows; i++) {
+        for (int j = 0; j < cols; j++) {
+            int r, c;
+            int startRow = i; 
+            int startCol = j; 
+            static std::string output;
+
+            int dir = 0;
+
+            while (dir != 8) {
+                r = startRow, c = startCol;
+                bool prefixChecked = false; 
+                output.clear(); 
+                output.reserve(256);
+
+                while(true) {
+                    // if the current row or column is out of bounds, then break
+                    if (c >= cols || r >= rows || r < 0 || c < 0) {
+                        break;
+                    }
+
+                    // set the next character in the output array to the next letter
+                    // in the grid
+                    output += grid[r][c];
+
+                    if (output.length() >= minLen) {
+                        // WordDir wd; 
+                        // wd.word = output; 
+                        // wd.dir = dir; 
+                        // outputs.push_back(wd);
+                        if (dict[output]) {
+                            wordsFound++; 
+                        }
+                        else if (!prefixHashTable[output]) {
+                            break;
+                        }
+                        
+                        // if (prefixHashTable[output] || prefixChecked) {
+                        //     prefixChecked = true; 
+                        // } else {
+                        //     if (dict[output]) {
+                        //         std::cout << dirToString(dir) << " " << "(" << i << ", " << j << "): " << output << "\n";
+                        //         wordsFound++; 
+                        //     }
+                        //     else if (!prefixChecked) {
+                        //         break; 
+                        //     }
+                        // }
+                    }
+
+                    // move in the direction specified by the parameter
+                    switch (dir) { // assumes grid[0][0] is in the upper-left
+                        case Grid::Directions::north:
+                            r--;
+                            break;    
+                        case Grid::Directions::north_east:
+                            r--;
+                            c++;
+                            break;     
+                        case Grid::Directions::east:
+                            c++;
+                            break;     
+                        case Grid::Directions::south_east:
+                            r++;
+                            c++;
+                            break;     
+                        case Grid::Directions::south:
+                            r++;
+                            break;     
+                        case Grid::Directions::south_west:
+                            r++;
+                            c--;
+                            break;    
+                        case Grid::Directions::west:
+                            c--;
+                            break;     
+                        case Grid::Directions::north_west:
+                            r--;
+                            c--;
+                            break;     
+                    }
+                }
+                dir++; 
+            }
+
+
+        }
+    }
+    std::cout << "words found = " << wordsFound << "\n";
+   
 }

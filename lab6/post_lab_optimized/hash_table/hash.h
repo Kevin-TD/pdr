@@ -13,7 +13,7 @@ class HashTable {
     public:
     HashTable(int tbSize); 
     HashTable(std::string fileName); 
-    ~HashTable(); 
+    HashTable(std::list<std::string> inputList); 
     void insert(std::pair<std::string, bool> pairToInsert); 
     bool retrieve(std::string toRetrieve); 
     bool operator[](std::string toRetrieve);
