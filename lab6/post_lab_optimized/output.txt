@@ -1,0 +1,4 @@
+words.txt
+140x70.grid.txt
+3878 words found
+execution time = 2.59539 seconds

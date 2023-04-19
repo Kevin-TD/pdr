@@ -15,13 +15,17 @@
 int main(int argc, char* argv[]) {
     timer t; 
     
-    string wordsFile, gridFile; 
+    string wordsFile, gridFile, outputFileName; 
 
      for ( int i = 1; i < argc; i++ ) {
         std::string s(argv[i]);
         if (i == 1) wordsFile = s;
-        if (i == 2) gridFile = s; 
+        else if (i == 2) gridFile = s; 
+        else if (i == 3) outputFileName = s; 
     }
+
+    std::ofstream outputFile;
+    outputFile.open("./output/" + outputFileName);
     
     t.start(); 
 
@@ -36,17 +40,18 @@ int main(int argc, char* argv[]) {
              std::list<WordDir> allWords = g.getAllWordsInAllDirs(i, j, 3);
              for (auto wordDir : allWords) {
                 if(dictionary[wordDir.word]) {
-                    std::cout << g.dirToString(wordDir.dir) << " " << "(" << i << ", " << j << "): " << wordDir.word << "\n";
+                    outputFile << g.dirToString(wordDir.dir) << " " << "(" << i << ", " << j << "): " << wordDir.word << "\n";
                     wordsFound++; 
                 }
              }
 
         }
     }
-    std::cout << wordsFound << " words found\n";
+    outputFile << wordsFound << " words found";
+    outputFile.close(); 
 
     t.stop(); 
 
-    printd("execution time = " << t.getTime() << " seconds");
+    std::cout << t.getTime() << std::endl; 
 
 }
