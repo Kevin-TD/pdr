@@ -16,19 +16,17 @@
 
 // chmod +x averagetime.sh ; ./averagetime.sh
 
-//3878 words found in 140x70 words
-//27409 words found in 300x300 words
+// [settings]: [unopt avg time] -> [opt avg time]  Speedup = unopt/opt
 
-// pre optimizations: on words.txt, 4x7.grid,  average time = 2507 ms 
-// 300x300 on words.txt takes ~4 minutes (215.276 seconds)
-// 140x70 ~4 to 5 seconds
+// 140x70 words: 2.59s -> 33 ms    Speedup = 784 
+// 300x300 words: 200 seconds -> 298 ms   Speedup = 67114   (4 minutes to 0.3 seconds!). Pre-preprocessing only takes 10 seconds (optimized).
 
 
 std::list<std::string> genPrefixes(std::string fileName, HashTable wordDict);
 
 int main(int argc, char* argv[]) {
     timer t; 
-    
+
     string wordsFile, gridFile, outputFileName; 
 
      for ( int i = 1; i < argc; i++ ) {
@@ -37,52 +35,19 @@ int main(int argc, char* argv[]) {
         else if (i == 2) gridFile = s; 
         else if (i == 3) outputFileName = s; 
     }
-
-    std::ofstream outputFile;
-    outputFile.open("./output/" + outputFileName);
-
-    std::ofstream prefixesFile;
-    prefixesFile.open("./output/prefixes.txt");
     
     HashTable dictionary = HashTable(wordsFile); 
     Grid g = Grid(gridFile, false);
 
     std::list<std::string> prefixes = genPrefixes(wordsFile, dictionary);
-    for (auto s : prefixes) {
-        prefixesFile << s << "\n";
-    }
-    prefixesFile.close();
-
     HashTable prefixHashTable = HashTable(prefixes);
 
+
     t.start(); 
-
-    // int rows = g.getRows();
-    // int cols = g.getCols(); 
-
-    // int wordsFound = 0; 
-    // for (int i = 0; i < rows; i++) {
-    //     for (int j = 0; j < cols; j++) {
-    //          std::list<WordDir> allWords = g.getAllWordsInAllDirs(i, j, 3, prefixHashTable);
-    //          for (auto wordDir : allWords) {
-    //             if(dictionary[wordDir.word]) {
-    //                 outputFile << g.dirToString(wordDir.dir) << " " << "(" << i << ", " << j << "): " << wordDir.word << "\n";
-
-    //                 wordsFound++; 
-    //             }
-    //          }
-
-    //     }
-    // }
-    // outputFile << wordsFound << " words found\n";
-    g.getAllDictWords(0, 0, 3, dictionary, prefixHashTable);
-
+    g.getAllDictWords(3, dictionary, prefixHashTable, outputFileName);
     t.stop(); 
 
     std::cout << t.getTime() << std::endl; 
-    outputFile << t.getTime();
-
-    outputFile.close(); 
 
 }
 
@@ -98,10 +63,8 @@ std::list<std::string> genPrefixes(std::string fileName, HashTable wordDict) {
                 std::string s = line.substr(0, 2);
                 for (int i = 2; i < lineLength - 1; i++) {
                     s += line[i]; 
-                    bool found1 = (std::find(prefixes.begin(), prefixes.end(), s) != prefixes.end());
-                    // bool found2 = wordDict[s];
-
-                    if (!found1)
+                    bool found = (std::find(prefixes.begin(), prefixes.end(), s) != prefixes.end());
+                    if (!found)
                         prefixes.push_back(s);
                 }
 

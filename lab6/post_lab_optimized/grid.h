@@ -18,15 +18,8 @@ struct WordDir {
 class Grid {
     public: 
     Grid(std::string filename, bool logOutput);
-    std::string getWordInGrid (int startRow, int startCol, int dir, int len);
-    std::string* getWordsInGrid (int startRow, int startCol, int len);
-    std::list<WordDir> getAllWordsInAllDirs (int startRow, int startCol, int minLen, HashTable prefixTable);
-    void getAllDictWords (int startRow, int startCol, int minLen, HashTable dict, HashTable prefixHashTable);
-    void printGrid(); 
-    int getRows(); 
-    int getCols();
-    char getEntry(int row, int col); 
-    
+    void getAllDictWords (int minLen, HashTable dict, HashTable prefixHashTable, std::string outputFileName);
+
     enum Directions {
         north, 
         north_east, 
