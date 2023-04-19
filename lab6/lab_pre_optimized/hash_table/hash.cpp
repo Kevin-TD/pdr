@@ -2,6 +2,7 @@
 #include <list>
 #include <utility>
 #include <iostream> 
+#include <fstream>
 
 bool checkprime(unsigned int p) {
     if ( p <= 1 ) // 0 and 1 are not primes; the are both special cases
@@ -33,6 +34,21 @@ long long hashString(std::string str) {
 	return hash_value; 
 }
 
+int getNumberOfLines(std::string fileName) {
+    std::ifstream file(fileName); 
+    std::string line;
+    int count = 0;
+
+    if (file.is_open()) {
+        while (getline(file, line)) {
+            count++;
+        }
+        file.close();
+    }
+
+    return count; 
+}
+
 HashTable::~HashTable() {
     delete[] buckets; 
 }
@@ -42,16 +58,35 @@ HashTable::HashTable(int tbSize) {
     buckets = new std::list<std::pair<std::string, bool> >[tableSize];
 }
 
+// instead of ./data/words.txt just put in words.txt
+HashTable::HashTable(std::string fileName) {
+    int lineCount = getNumberOfLines("./data/" + fileName);
+    tableSize = getNextPrime(lineCount); 
+    buckets = new std::list<std::pair<std::string, bool> >[tableSize];
+
+    std::ifstream file("./data/" + fileName); 
+    std::string line; 
+
+    if (file.is_open()) {
+        while (getline(file, line)) {
+            insert(std::make_pair(line, true)); 
+        }
+        file.close(); 
+    }
+
+}
+
 void HashTable::insert(std::pair<std::string, bool> pairToInsert) {
     int hashedKey = hash(pairToInsert.first); 
     buckets[hashedKey].push_front(pairToInsert); 
+    elementCount++; 
 }
 
 int HashTable::hash(std::string stringToHash) {
-    return hashString(stringToHash) % tableSize; 
+    return abs(hashString(stringToHash)) % tableSize; 
 }
 
-bool HashTable::retrive(std::string toRetrieve) {
+bool HashTable::retrieve(std::string toRetrieve) {
     int hashedKey = hash(toRetrieve);
     std::list<std::pair<std::string, bool> > bucket = buckets[hashedKey];
 
@@ -62,3 +97,31 @@ bool HashTable::retrive(std::string toRetrieve) {
 
     return false;  
 }
+
+bool HashTable::operator[](std::string toRetrieve) {
+    return retrieve(toRetrieve);
+}
+
+void HashTable::log() {
+    int unused = 0; 
+    for (int i = 0; i < tableSize; i++) {
+	std::list<std::pair<std::string, bool> > bucket = buckets[i];
+	
+	if (bucket.size() == 0) unused++;  
+
+	for(auto it = bucket.begin(); it != bucket.end(); ++it) {
+	    std::cout << it->first << " "; 	
+	}
+
+	std::cout << "\n"; 
+    }
+    float u_ = unused / elementCount; 
+    std::cout << "amt unused = " << u_ << std::endl;
+}
+
+float HashTable::getLoadFactor() {
+    return elementCount / tableSize; 
+}
+
+
+

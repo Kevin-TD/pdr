@@ -4,6 +4,7 @@
 #include <list>
 #include <utility>
 #include <iostream>
+#include <string>
 
 #ifndef HASH_TABLE_H
 #define HASH_TABLE_H
@@ -11,14 +12,19 @@
 class HashTable { 
     public:
     HashTable(int tbSize); 
+    HashTable(std::string fileName); 
     ~HashTable(); 
     void insert(std::pair<std::string, bool> pairToInsert); 
-    bool retrive(std::string toRetrieve); 
+    bool retrieve(std::string toRetrieve); 
+    bool operator[](std::string toRetrieve);
+    void log(); 
+    float getLoadFactor(); 
 
     private: 
     int tableSize;
     std::list<std::pair<std::string, bool> >* buckets;
     int hash(std::string stringToHash); 
+    float elementCount;
 };
 
 #endif 

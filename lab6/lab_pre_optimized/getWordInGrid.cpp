@@ -33,12 +33,16 @@ int main() {
     int rows, cols;
 
     // attempt to read in the file
-    bool result = readInGrid("5x8.grid.txt", rows, cols);
+    bool result = readInGrid("./data/5x8.grid.txt", rows, cols);
     // if there is an error, report it
     if (!result) {
         cout << "Error reading in file!" << endl;
         return 1;
     }
+
+
+//(int startRow, int startCol, int dir, int len,
+  //                    int numRows, int numCols
 
     // Get a word (of length 10), starting at position (2,2) in the
     // array, in each of the 8 directions
